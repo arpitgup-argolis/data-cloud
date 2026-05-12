@@ -1,0 +1,25 @@
+{
+  "constraints": [
+    {
+      "constraint": "iam.allowedPolicyMemberDomains",
+      "policy_type": "list",
+      "allow_all": true,
+      "deny_all": false,
+      "allowed_values": [],
+      "denied_values": [],
+      "restore_post_deployment": true
+    }
+  ],
+  "apis_to_enable": [
+    "orgpolicy.googleapis.com",
+    "migrationcenter.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "run.googleapis.com",
+    "secretmanager.googleapis.com",
+    "datamigration.googleapis.com",
+    "sqladmin.googleapis.com",
+    "vmmigration.googleapis.com",
+    "networkmanagement.googleapis.com",
+    "servicenetworking.googleapis.com"
+  ]
+}

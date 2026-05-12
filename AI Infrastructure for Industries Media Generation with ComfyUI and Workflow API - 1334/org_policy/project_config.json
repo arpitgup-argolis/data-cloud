@@ -1,0 +1,16 @@
+{
+  "constraints": [
+    {
+      "constraint": "iam.allowedPolicyMemberDomains",
+      "policy_type": "list",
+      "allow_all": true,
+      "deny_all": false,
+      "allowed_values": [],
+      "denied_values": [],
+      "restore_post_deployment": true
+    }
+  ],
+  "apis_to_enable": [
+    "cloudresourcemanager.googleapis.com"
+  ]
+}

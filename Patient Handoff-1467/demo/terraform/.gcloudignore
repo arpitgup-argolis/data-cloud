@@ -1,0 +1,26 @@
+# Ignore Terraform state and cache files
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+
+# Ignore Terraform variable files (may contain sensitive data)
+terraform.tfvars
+*.auto.tfvars
+
+# Ignore common development files
+.git/
+.gitignore
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Ignore documentation that's not needed for build
+README.md
+*.md
+
+# Ignore example files
+*.example

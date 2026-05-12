@@ -1,0 +1,5 @@
+# Sample Data for BQ Load
+id,name,value
+1,Item A,100
+2,Item B,200
+3,Item C,300

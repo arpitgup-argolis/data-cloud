@@ -1,0 +1,65 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  
+substitutions:
+  _REGION: us-central1
+  
+steps:
+  # Step 1: Delete Cloud Run service
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'Delete Cloud Run service'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Deleting Cloud Run service: patient-handoff"
+        gcloud run services delete patient-handoff \
+          --region=$_REGION \
+          --platform=managed \
+          --quiet || echo "Service may not exist or already deleted"
+    
+  # Step 2: Delete images from Artifact Registry
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'Delete Artifact Registry images'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Deleting images from Artifact Registry"
+        gcloud artifacts docker images delete \
+          $_REGION-docker.pkg.dev/$PROJECT_ID/patient-handoff/patient-handoff:latest \
+          --quiet || echo "Images may not exist or already deleted"
+        
+        # Delete all versions
+        gcloud artifacts docker images list \
+          $_REGION-docker.pkg.dev/$PROJECT_ID/patient-handoff/patient-handoff \
+          --format="value(version)" | while read version; do
+          gcloud artifacts docker images delete \
+            $_REGION-docker.pkg.dev/$PROJECT_ID/patient-handoff/patient-handoff@$version \
+            --quiet || true
+        done
+    
+  # Step 3: Clean up any remaining resources
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'Cleanup'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Cleanup completed"
+        echo "Note: Artifact Registry repository and state bucket are preserved"
+        echo "To fully clean up, run: terraform destroy"

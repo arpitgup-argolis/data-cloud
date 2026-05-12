@@ -1,0 +1,23 @@
+# Terraform variables for Patient Handoff deployment
+# Copy this file to terraform.tfvars and update with your project details
+
+# Required variables - UPDATE THESE WITH YOUR PROJECT DETAILS
+project_id     = "YOUR_PROJECT_ID"
+project_name   = "YOUR_PROJECT_NAME"
+project_number = "YOUR_PROJECT_NUMBER"
+gcp_account_name = "YOUR_EMAIL@example.com"
+org_id         = "YOUR_ORG_ID"
+data_location  = ""  # Set this if needed
+secret_stored_project = "YOUR_PROJECT_ID"
+
+# Region configuration
+region = "us-west1"
+
+# Enable API management to allow Terraform to enable required APIs
+enable_apis = true
+
+# Disable GCS bucket creation - bucket already exists or will be managed separately
+create_gcs_bucket = false
+
+# GCS bucket configuration (bucket already exists)
+gcs_bucket_name = "patient-handoff-data-YOUR_PROJECT_ID-us-west1"

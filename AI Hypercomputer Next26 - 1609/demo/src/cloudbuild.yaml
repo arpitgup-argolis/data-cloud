@@ -1,0 +1,31 @@
+# Cloud Build configuration for Marathon Planner Agent
+#
+# Builds the Docker image, pushes to Artifact Registry, and deploys to Cloud Run.
+# Run from project root:
+#   gcloud builds submit --config=cloudbuild.yaml --project=YOUR_PROJECT_ID
+
+substitutions:
+  _LOCATION: us-central1
+  _REPOSITORY_ID: orchestrator-agent
+  _IMAGE_NAME: orchestrator-agent
+  _IMAGE_TAG: latest
+
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/${_IMAGE_NAME}:${_IMAGE_TAG}'
+      - '-f'
+      - 'src/planner_agent/Dockerfile'
+      - '.'
+
+  # Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY_ID}/${_IMAGE_NAME}:${_IMAGE_TAG}'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

@@ -1,0 +1,186 @@
+{
+    "constraints": [
+        {
+            "constraint": "iam.allowedPolicyMemberDomains",
+            "policy_type": "list",
+            "allow_all": true,
+            "deny_all": false,
+            "allowed_values": [],
+            "denied_values": [],
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "iam.allowServiceAccountCredentialLifetimeExtension",
+            "policy_type": "list",
+            "allow_all": true,
+            "deny_all": false,
+            "allowed_values": [],
+            "denied_values": [],
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "iam.automaticIamGrantsForDefaultServiceAccounts",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "iam.disableServiceAccountKeyCreation",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "iam.disableServiceAccountKeyUpload",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "iam.disableServiceAccountCreation",
+            "policy_type": "boolean",
+            "enforced": false,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.disableSerialPortAccess",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.disableSerialPortLogging",
+            "policy_type": "boolean",
+            "enforced": false,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.disableNestedVirtualization",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.skipDefaultNetworkCreation",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.disableInternetNetworkEndpointGroup",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.requireOsLogin",
+            "policy_type": "boolean",
+            "enforced": false,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.requireShieldedVm",
+            "policy_type": "boolean",
+            "enforced": false,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.trustedImageProjects",
+            "policy_type": "list",
+            "allow_all": true,
+            "deny_all": false,
+            "allowed_values": [],
+            "denied_values": [],
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.vmExternalIpAccess",
+            "policy_type": "list",
+            "allow_all": true,
+            "deny_all": false,
+            "allowed_values": [],
+            "denied_values": [],
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.restrictVpcPeering",
+            "policy_type": "list",
+            "allow_all": true,
+            "deny_all": false,
+            "allowed_values": [],
+            "denied_values": [],
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "compute.vmCanIpForward",
+            "policy_type": "list",
+            "allow_all": true,
+            "deny_all": false,
+            "allowed_values": [],
+            "denied_values": [],
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "storage.uniformBucketLevelAccess",
+            "policy_type": "boolean",
+            "enforced": false,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "storage.publicAccessPrevention",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "sql.restrictAuthorizedNetworks",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "sql.restrictPublicIp",
+            "policy_type": "boolean",
+            "enforced": false,
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "cloudfunctions.allowedIngressSettings",
+            "policy_type": "list",
+            "allow_all": true,
+            "deny_all": false,
+            "allowed_values": [],
+            "denied_values": [],
+            "restore_post_deployment": true
+        },
+        {
+            "constraint": "appengine.disableCodeDownload",
+            "policy_type": "boolean",
+            "enforced": true,
+            "restore_post_deployment": true
+        }
+    ],
+    "apis_to_enable": [
+        "compute.googleapis.com",
+        "iam.googleapis.com",
+        "cloudresourcemanager.googleapis.com",
+        "orgpolicy.googleapis.com",
+        "serviceusage.googleapis.com",
+        "aiplatform.googleapis.com",
+        "storage.googleapis.com",
+        "bigquery.googleapis.com",
+        "sqladmin.googleapis.com",
+        "servicenetworking.googleapis.com",
+        "composer.googleapis.com",
+        "dataproc.googleapis.com",
+        "datacatalog.googleapis.com",
+        "notebooks.googleapis.com",
+        "spanner.googleapis.com",
+        "dataflow.googleapis.com",
+        "analyticshub.googleapis.com",
+        "container.googleapis.com",
+        "cloudbuild.googleapis.com",
+        "pubsub.googleapis.com",
+        "secretmanager.googleapis.com"
+    ]
+}

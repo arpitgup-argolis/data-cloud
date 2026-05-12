@@ -1,0 +1,13 @@
+{
+  "constraints": [
+  ],
+  "apis_to_enable": [
+    "run.googleapis.com",
+    "container.googleapis.com",
+    "aiplatform.googleapis.com",
+    "compute.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "geminicloudassist.googleapis.com"
+  ]
+}

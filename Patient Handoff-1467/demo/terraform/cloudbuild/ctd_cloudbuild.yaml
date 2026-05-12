@@ -1,0 +1,159 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+# Secret configuration for GitLab token and Gemini API key
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_ID/secrets/gitlab-token/versions/latest
+    env: 'GITLAB_TOKEN_B64'
+  - versionName: projects/$PROJECT_ID/secrets/gemini-api-key/versions/latest
+    env: 'GEMINI_API_KEY'
+  
+substitutions:
+  _IMAGE_NAME: patient-handoff/patient-handoff:latest
+  _REPO_URL: gitlab.com/google-cloud-ce/communities/cloud-demo-engineering/patient-handoff.git
+  _REGION: us-central1  # Change this to your desired region
+  _INITIAL_USER: user@example.com  # Will be overridden by Terraform
+  
+steps:
+  # Step 1: Clone the repository from GitLab
+  - name: 'gcr.io/cloud-builders/git'
+    id: 'Clone repository'
+    entrypoint: 'bash'
+    secretEnv: ['GITLAB_TOKEN_B64']
+    args:
+      - '-c'
+      - |
+        # Decode the base64 encoded GitLab token
+        GITLAB_TOKEN=$(echo "$$GITLAB_TOKEN_B64" | base64 -d)
+        
+        # Clone the repository using the decoded token
+        git clone --depth 1 \
+          https://oauth2:$$GITLAB_TOKEN@$_REPO_URL \
+          repo
+    
+  # Step 2: Build the Vite application with Gemini API key
+  - name: 'node:22'
+    id: 'Build application'
+    entrypoint: 'bash'
+    secretEnv: ['GEMINI_API_KEY']
+    args:
+      - '-c'
+      - |
+        cd repo/patient-handoff-app
+        
+        # Set environment variables for Vite build
+        export VITE_API_KEY="$$GEMINI_API_KEY"
+        export VITE_GEMINI_API_KEY="$$GEMINI_API_KEY"
+        export VITE_GOOGLE_GENERATIVE_AI_API_KEY="$$GEMINI_API_KEY"
+        
+        echo "Building with Gemini API key environment variables..."
+        npm install
+        npm run build
+        
+        echo "Build complete. Checking if API key was embedded..."
+        # Check if the API key appears in the built files (first few characters only for security)
+        if grep -r "AIza" dist/ 2>/dev/null | head -1; then
+          echo "API key appears to be embedded in build"
+        else
+          echo "Warning: API key may not be embedded in build"
+        fi
+    
+  # Step 3: Create Dockerfile for serving the built app
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Create Dockerfile'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cd repo/patient-handoff-app
+        cat > Dockerfile <<'EOF'
+        FROM nginx:alpine
+        COPY dist /usr/share/nginx/html
+        EXPOSE 8080
+        CMD sed -i 's/listen\s*80;/listen 8080;/g' /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
+        EOF
+    
+  # Step 4: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Docker image'
+    args: ['build', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_IMAGE_NAME', '.']
+    dir: 'repo/patient-handoff-app'
+    
+  # Step 5: Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Push image to Artifact Registry'
+    args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_IMAGE_NAME']
+    
+  # Step 6: Deploy to Cloud Run (unauthenticated initially)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: 'bash'
+    id: 'Deploy to Cloud Run'
+    args:
+      - '-c'
+      - |
+        gcloud beta run deploy patient-handoff \
+          --image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_IMAGE_NAME \
+          --region=$_REGION \
+          --platform=managed \
+          --allow-unauthenticated \
+          --project=$PROJECT_ID \
+          --port=8080
+    
+  # Step 7: Update service to enable IAP
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: 'bash'
+    id: 'Enable IAP on Cloud Run'
+    args:
+      - '-c'
+      - |
+        echo "Enabling IAP on Cloud Run service"
+        gcloud beta run services update patient-handoff \
+          --region=$_REGION \
+          --project=$PROJECT_ID \
+          --iap
+    
+  # Step 8: Grant IAP service agent invoker permission
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'Grant IAP service agent permission'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Granting Cloud Run invoker permission to IAP service agent"
+        gcloud run services add-iam-policy-binding patient-handoff \
+          --region=$_REGION \
+          --member=serviceAccount:service-$PROJECT_NUMBER@gcp-sa-iap.iam.gserviceaccount.com \
+          --role=roles/run.invoker \
+          --project=$PROJECT_ID
+    
+  # Step 9: Configure IAP access for initial user
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'Configure IAP access'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Configuring IAP access for user: $_INITIAL_USER"
+        gcloud beta iap web add-iam-policy-binding \
+          --project=$PROJECT_ID \
+          --region=$_REGION \
+          --member=user:$_INITIAL_USER \
+          --role=roles/iap.httpsResourceAccessor \
+          --resource-type=cloud-run \
+          --service=patient-handoff \
+          --condition=None

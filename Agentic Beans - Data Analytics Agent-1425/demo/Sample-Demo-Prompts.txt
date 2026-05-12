@@ -1,0 +1,50 @@
+----------------------------------------------------------------------------------------------------
+-- Data Eng Agent - Autonomous
+----------------------------------------------------------------------------------------------------
+Autonomously correct this dataform pipeline:
+repository_name: "agentic-beans-repo"
+workspace_name:  "telemetry-coffee-machine-auto"
+data_quality_scan_name: "telemetry-coffee-machine-staging-load-dq"
+
+
+----------------------------------------------------------------------------------------------------
+-- Knowledge Engine - Vector Embeddings
+----------------------------------------------------------------------------------------------------
+- LONG: Create an knowledge engine scan on my agentic raw dataset. 
+- TALK: Create a data insight scan on every table in my curated dataset.
+
+How much did the customer Gale buy?  Ask me if you find more than one customer ask me to select the correct one.
+How much did Gale spend on Ciber brews?
+Can you look up the products that are related to coffee and see how much Gale spent?
+
+
+----------------------------------------------------------------------------------------------------
+-- AI Forecast
+----------------------------------------------------------------------------------------------------
+For The Daily Grind truck will we run out of any ingredients in the next 2 hours?
+    - FOLLOW UP: Which ingredients should I restock first?
+    - FOLLOW UP: Show me the ingredients names.
+        - OR: Show me the products that use these ingredients. (no ingredient per product table)
+
+
+----------------------------------------------------------------------------------------------------
+-- AI Generate Bool
+----------------------------------------------------------------------------------------------------
+Do any product images have latte art?
+
+Do any product category images have drinks that look chilly?
+
+
+-- Data Quality
+Create data quality rules on the customer table in the agentic curated dataset.  Use the data profile scan named: customer data profile scan.
+
+-- Data Discovery
+-> you need to upload some csv files or copy them!
+create a data discovery scan on bucket data-analytics-agent-data-sbhulzik using connection projects/data-analytics-agent-sbhulzik/locations/us-central1/connections/biglake-connection
+
+Thought
+Okay, here's the deal. I'm back at it, trying to get this data discovery scan up and running. Last time, I totally messed up on the biglake_connection_name. Turns out I was using the wrong format. The error message was pretty clear: it had to be the full resource path. So, I’ve gone back and made the necessary adjustments, making sure that the biglake_connection_name is correctly formatted now as projects/data-analytics-agent-sbhulzik/locations/us-central1/connections/biglake-connection.
+
+This is a fresh start, a new attempt. So, I need to follow Workflow 1, starting from the top.
+
+First, I need to call parse_create_and_run_data_discovery_scan_params to process the prompt I'm providing. Then, I need to make the transition over to CreateAndRunDataDiscovery_Agent. Hopefully, with the connection name fixed, this tim
